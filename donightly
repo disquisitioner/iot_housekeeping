@@ -1,0 +1,37 @@
+#! /bin/sh
+
+# Script run once each day (usually just after midnight) to do housekeeping
+
+cd /home/dbryant/bin/cron
+
+/bin/date >> ./donightly.out
+echo "Running nightly (once per day) housekeeping" >> ./donightly.out
+/usr/bin/id >> ./donightly.out
+
+# Create file with status info
+/bin/date > ./status.msg
+
+# Note time system was most recently booted
+#/usr/bin/who -b >> ./status.msg
+/usr/bin/awk -f boottime.awk >> ./status.msg
+
+# Battery alerts for unteathered devices
+python3 battery_alert.py > ./battery.msg
+if [ $? -eq 0 ]
+then
+    echo "Battery levels are OK" >> ./status.msg
+else
+    echo "Battery charging time!" >> ./status.msg
+    python3 -u ./sendemail.py --host gmx --message battery.msg --to david_bryant@yahoo.com --subject "Battery status alert!" >> ./donightly.out
+fi
+
+# Python program to send email message with heartbeat status info
+python3 -u ./sendemail.py --host gmx --message status.msg --to david_bryant@yahoo.com --subject "Endor.local housekeeping update" >> ./donightly.out
+
+# Remove logfile accumulated by hourly cron script?
+# /bin/date > ./dohourly.out
+# echo "Nightly script cleanup" >> ./dohourly.out
+
+echo "=====" >> ./donightly.out
+
+exit 0

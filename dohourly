@@ -1,0 +1,18 @@
+#! /bin/sh
+
+# Script run hourly to do housekeeping
+
+cd /home/dbryant/bin/cron
+
+/bin/date >> ./dohourly.out
+echo "Running hourly housekeeping" >> ./dohourly.out
+
+echo "Running with these credentials:" >> ./dohourly.out
+/usr/bin/id >> ./dohourly.out
+
+# Query Influx to check on battery status for untetherd devices
+python3 ./battery_status.py >> ./dohourly.out
+
+echo "=====" >> ./dohourly.out
+
+exit 0

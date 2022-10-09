@@ -1,0 +1,6 @@
+# Nightly housekeeping, executed at 12:10am
+10 0 * * * /home/username/bin/cron/donightly > /home/username/bin/cron/donightly.log
+
+# Hourly housekeeping, executed on the hour
+@hourly /home/username/bin/cron/dohourly >> /home/username/bin/cron/dohourly.log
+
